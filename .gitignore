@@ -1,0 +1,4 @@
+**/venv/*
+**/logs/*
+./mnist/logs/*
+**/MNIST_data/*
