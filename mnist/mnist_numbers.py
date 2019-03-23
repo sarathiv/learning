@@ -14,8 +14,10 @@ train = optimizer.minimize(cross_entropy)
 
 sess = tf. Session()
 init = tf.global_variables_initializer()
+
 merged = tf.summary.merge_all()
 writer = tf.summary.FileWriter("logs",sess.graph)
+
 sess.run(init)
 
 for i in range(1000):
