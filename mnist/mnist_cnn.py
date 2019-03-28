@@ -74,24 +74,27 @@ tf.float32))
 
     with tf.Session() as sess:
         sess.run(tf.global_variables_initializer())
+        saver = tf.train.Saver()
         loop_start_time = time.time()
+        iteration_start_time = time.time()
         for i in range(20000):
-            iteration_start_time = time.time()
             batch = mnist_data.train.next_batch(50)
+            train_step.run(feed_dict={x:batch[0],y_:batch[1],keep_prob:0.5})
             if i % 100 == 0:
+                iteration_time_seconds = time.time()-iteration_start_time
+                print ('Iterarion %d, %f minutes since start, 100 iteration time %f seconds' %(i,(float)(time.time() - loop_start_time)/60,iteration_time_seconds))
+                time_left_seconds = (float)(20000-i)*(iteration_time_seconds/100)
+                print ('Time left in minutes : %f at %f per iterations ' %(time_left_seconds/60,time_left_seconds))
+                iteration_start_time = time.time()
                 train_accuracy = accuracy.eval(
             feed_dict={x:batch[0],y_:batch[1],keep_prob:1.0})
                 print ('step %d , training accuracy %g' %(i,train_accuracy))
+                print ('test accuracy %g' %
+            accuracy.eval(feed_dict={
+                        x: mnist_data.test.images,
+                        y_: mnist_data.test.labels,
+                        keep_prob: 1.0
+                    }))
 
-            train_step.run(feed_dict={x:batch[0],y_:batch[1],keep_prob:0.5})
-            print ('test accuracy %g' %
-        accuracy.eval(feed_dict={
-                    x: mnist_data.test.images,
-                    y_: mnist_data.test.labels,
-                    keep_prob: 1.0
-                }))
-            iteration_time_seconds = time.time()-iteration_start_time
-            print ('Iterarion %d, %f minutes since start, loop iteration time %f seconds' %(i,(float)(time.time() - loop_start_time)/60,iteration_time_seconds))
-            time_left_seconds = (float)(20000-i)/(iteration_time_seconds)
-            print ('Time left in minutes : %f at %f per iterations ' %(time_left_seconds/60,time_left_seconds))
+        saver.save(sess,"model/cnn/mnist_cnn")
         print("CNN finished")
